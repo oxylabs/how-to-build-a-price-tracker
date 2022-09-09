@@ -52,9 +52,3 @@ def main():
         df_updated.to_csv(PRICES_CSV, index=False, mode="a")
     if SEND_MAIL:
         send_mail(df_updated)
-
-
-
-
-
-
