@@ -54,9 +54,14 @@ def send_mail(df):
         smtp.login(mail_user, mail_pass)
         smtp.sendmail(mail_user, mail_to, message_text)
 
+"""return pandas dataframe"""
+def site_get_df():
+    df = get_urls(PRODUCT_URL_CSV)
+    df_updated = process_products(df)
+    return df_updated
+
 def main():
     df = get_urls(PRODUCT_URL_CSV)
-    print("here")
     df_updated = process_products(df)
     if SAVE_TO_CSV:
         df_updated.to_csv(PRICES_CSV, index=False, mode="a")

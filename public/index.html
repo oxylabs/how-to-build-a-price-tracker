@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Button Website</title>
+   <!-- Include Tailwind CSS -->
+   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+   <style>
+       /* Add custom CSS for the button hover effect */
+       #myButton {
+           background-color: rgba(59, 130, 246, 1); /* Original background color */
+           transition: background-color 0.3s ease-in-out;
+       }
+
+       #myButton:hover {
+           background-color: rgba(59, 130, 246, 0.5); /* Dimmed background color */
+       }
+
+       #myButton.fade-out {
+           animation: fadeToOriginal 0.3s ease-in-out forwards;
+       }
+
+       @keyframes fadeToOriginal {
+           from {
+               background-color: rgba(59, 130, 246, 0.5); /* Dimmed background color */
+           }
+           to {
+               background-color: rgba(59, 130, 246, 1); /* Original background color */
+           }
+       }
+   </style>
+</head>
+<body class="bg-gray-100 flex justify-center items-center h-screen">
+   <div class="text-center">
+       <h1 class="text-2xl font-semibold mb-4">Website with a Button</h1>
+       <button id="myButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+           Click me!
+       </button>
+       <div id="tableContainer"></div>
+   </div>
+
+   <script>
+       // JavaScript to handle button click and hover effect
+       const myButton = document.getElementById('myButton');
+
+       myButton.addEventListener('mouseenter', function() {
+           this.classList.remove('fade-out');
+       });
+
+       myButton.addEventListener('mouseleave', function() {
+           this.classList.add('fade-out');
+       });
+
+       myButton.addEventListener('click', function() {
+           // Use fetch to call the Python script (server-side)
+           fetch('/call-python-script')
+               .then(response => response.text())
+               .then(data => {
+                   // Display the received HTML table in the tableContainer div
+                   document.getElementById('tableContainer').innerHTML = data;
+               })
+               .catch(error => {
+                   console.error('Error:', error);
+               });
+       });
+   </script>
+</body>
+</html>
