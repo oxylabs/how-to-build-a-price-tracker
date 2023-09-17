@@ -9,23 +9,32 @@ SAVE_TO_CSV = True
 PRICES_CSV = "prices.csv"
 SEND_MAIL = True
 
+# for cloudflare check to bypass
+HEADERS = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+
 def get_urls(csv_file):
     df = pd.read_csv(csv_file)
     return df
 
 def get_response(url):
-    response = requests.get(url)
+    response = requests.get(url, headers=HEADERS)
+    # print(url)
+    # print(response.text)
     return response.text
 
 def get_price(html):
-    soup = BeautifulSoup(html, "lxml")
-    el = soup.select_one(".price_color")
-    price = Price.fromstring(el.text)
-    return price.amount_float
+    soup = BeautifulSoup(html, "html.parser")
+
+    # el = soup.select_one(".price_color")
+    # price = Price.fromstring(el.text)
+
+    price_object = soup.find('span', {'class': 'product__price'})
+    return float(price_object.text.strip("$"))
+    # return price.amount_float
 
 def process_products(df):
     updated_products = []
-     for product in df.to_dict("records"):
+    for product in df.to_dict("records"):
         html = get_response(product["url"])
         product["price"] = get_price(html)
         product["alert"] = product["price"] < product["alert_price"]
@@ -47,8 +56,13 @@ def send_mail(df):
 
 def main():
     df = get_urls(PRODUCT_URL_CSV)
+    print("here")
     df_updated = process_products(df)
     if SAVE_TO_CSV:
         df_updated.to_csv(PRICES_CSV, index=False, mode="a")
     if SEND_MAIL:
-        send_mail(df_updated)
+        pass
+        # send_mail(df_updated)
+
+if __name__ == "__main__":
+    main()
